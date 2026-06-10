@@ -3,6 +3,7 @@ import { useApp } from '../store/AppContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, Compass, Calendar, CheckCircle, RefreshCw, XCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import { joinOrderTracking, subscribeToOrderStatus } from '../services/socket';
+import { API_BASE_URL } from '../config';
 
 export const UserDashboard: React.FC = () => {
   const { token, user } = useApp();
@@ -21,7 +22,7 @@ export const UserDashboard: React.FC = () => {
     setLoading(true);
 
     // Fetch historical orders
-    fetch('http://localhost:5000/api/orders', {
+    fetch(`${API_BASE_URL}/api/orders`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -37,7 +38,7 @@ export const UserDashboard: React.FC = () => {
       .catch((err) => console.error(err));
 
     // Fetch subscription details
-    fetch('http://localhost:5000/api/orders/subscription', {
+    fetch(`${API_BASE_URL}/api/orders/subscription`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -93,7 +94,7 @@ export const UserDashboard: React.FC = () => {
     if (!token) return;
     if (!confirm('Are you sure you want to cancel this subscription plan?')) return;
 
-    fetch(`http://localhost:5000/api/orders/subscription/${subId}/cancel`, {
+    fetch(`${API_BASE_URL}/api/orders/subscription/${subId}/cancel`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -107,7 +108,7 @@ export const UserDashboard: React.FC = () => {
 
   const handleSubscribe = (type: string) => {
     if (!token) return;
-    fetch('http://localhost:5000/api/orders/subscription', {
+    fetch(`${API_BASE_URL}/api/orders/subscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

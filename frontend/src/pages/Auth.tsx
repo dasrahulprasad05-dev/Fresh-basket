@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import { User, Mail, Lock, Shield, Sparkles, LogIn, ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export const Auth: React.FC = () => {
   const { login } = useApp();
@@ -22,7 +23,7 @@ export const Auth: React.FC = () => {
     const endpoint = isLogin ? 'login' : 'register';
     const body = isLogin ? { email, password } : { email, password, name };
 
-    fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+    fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

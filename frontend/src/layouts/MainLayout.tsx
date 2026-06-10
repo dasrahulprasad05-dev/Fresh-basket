@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import { ShoppingBag, Heart, User, LogOut, ShieldAlert, Sparkles, Sprout } from 'lucide-react';
 import { subscribeToInventory } from '../services/socket';
+import { API_BASE_URL } from '../config';
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout, cart, wishlist } = useApp();
@@ -16,7 +17,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       // If stock drops below 15, we show a global toast/banner
       if (data.stock <= 15) {
         // Fetch details of product
-        fetch(`http://localhost:5000/api/products/${data.productId}`)
+        fetch(`${API_BASE_URL}/api/products/${data.productId}`)
           .then((res) => res.json())
           .then((json) => {
             if (json.product) {

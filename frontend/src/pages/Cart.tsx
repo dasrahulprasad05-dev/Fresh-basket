@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import { Trash2, ShoppingBag, Plus, Minus, Tag, Calculator, Sparkles } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export const Cart: React.FC = () => {
   const {
@@ -36,7 +37,7 @@ export const Cart: React.FC = () => {
       quantity: item.quantity,
     }));
 
-    fetch('http://localhost:5000/api/recommendations/nutrition', {
+    fetch(`${API_BASE_URL}/api/recommendations/nutrition`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

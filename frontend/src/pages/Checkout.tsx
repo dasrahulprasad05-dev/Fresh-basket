@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import { ShieldCheck, MapPin, CreditCard, Sparkles, AlertCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { API_BASE_URL } from '../config';
 
 export const Checkout: React.FC = () => {
   const { cart, coupon, clearCart, token } = useApp();
@@ -46,7 +47,7 @@ export const Checkout: React.FC = () => {
 
     const fullAddressString = `${name}, ${address}, ${city}, ${zipCode}`;
 
-    fetch('http://localhost:5000/api/orders/checkout', {
+    fetch(`${API_BASE_URL}/api/orders/checkout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

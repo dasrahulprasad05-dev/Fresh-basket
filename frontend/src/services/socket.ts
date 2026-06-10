@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
+import { API_BASE_URL } from '../config';
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = API_BASE_URL;
 let socket: Socket | null = null;
 
 export function getSocket(): Socket {

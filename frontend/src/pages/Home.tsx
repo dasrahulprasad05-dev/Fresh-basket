@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Fruit3D from '../components/Fruit3D';
 import { ArrowRight, ShoppingCart, Star, ShieldCheck, Heart, Truck, Sparkles, MapPin } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { API_BASE_URL } from '../config';
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export const Home: React.FC = () => {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products?isFeatured=true')
+    fetch(`${API_BASE_URL}/api/products?isFeatured=true`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products) setFeaturedProducts(data.products);

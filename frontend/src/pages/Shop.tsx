@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import { Search, SlidersHorizontal, Heart, ShoppingCart, RefreshCw, AlertTriangle } from 'lucide-react';
 import { subscribeToInventory } from '../services/socket';
+import { API_BASE_URL } from '../config';
 
 export const Shop: React.FC = () => {
   const location = useLocation();
@@ -30,7 +31,7 @@ export const Shop: React.FC = () => {
   // Fetch products function
   const fetchProducts = () => {
     setLoading(true);
-    let url = 'http://localhost:5000/api/products?';
+    let url = `${API_BASE_URL}/api/products?`;
     if (selectedCategory) url += `category=${selectedCategory}&`;
     if (selectedSeason) url += `season=${selectedSeason}&`;
     if (searchTerm) url += `search=${searchTerm}&`;
@@ -83,7 +84,7 @@ export const Shop: React.FC = () => {
     setSelectedSeason('');
     setSortOption('');
     // Re-fetch default
-    fetch('http://localhost:5000/api/products')
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products) setProducts(data.products);

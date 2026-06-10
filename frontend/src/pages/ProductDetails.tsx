@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useApp } from '../store/AppContext';
 import Fruit3D from '../components/Fruit3D';
 import { Star, ShieldAlert, Heart, ShoppingCart, Info, User, ChevronRight, Check } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export const ProductDetails: React.FC = () => {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export const ProductDetails: React.FC = () => {
     setLoading(true);
 
     // Fetch product details
-    fetch(`http://localhost:5000/api/products/${id}`)
+    fetch(`${API_BASE_URL}/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.product) setProduct(data.product);
@@ -35,7 +36,7 @@ export const ProductDetails: React.FC = () => {
       });
 
     // Fetch AI Recommendations based on this item
-    fetch(`http://localhost:5000/api/recommendations?productIds=${id}`)
+    fetch(`${API_BASE_URL}/api/recommendations?productIds=${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.recommendations) setRecommendations(data.recommendations);
@@ -91,7 +92,7 @@ export const ProductDetails: React.FC = () => {
 
     const customerObj = JSON.parse(storedUser);
 
-    fetch(`http://localhost:5000/api/products/${product.id}/review`, {
+    fetch(`${API_BASE_URL}/api/products/${product.id}/review`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

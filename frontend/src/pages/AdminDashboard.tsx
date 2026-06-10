@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../store/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Sparkles, TrendingUp, ShoppingBag, Users, AlertTriangle, RefreshCw, BarChart } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 export const AdminDashboard: React.FC = () => {
   const { token, user } = useApp();
@@ -20,7 +21,7 @@ export const AdminDashboard: React.FC = () => {
     setLoading(true);
 
     // Fetch dashboard aggregations
-    fetch('http://localhost:5000/api/orders/admin/stats', {
+    fetch(`${API_BASE_URL}/api/orders/admin/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -35,7 +36,7 @@ export const AdminDashboard: React.FC = () => {
       .catch((err) => console.error(err));
 
     // Fetch full products list to edit stock
-    fetch('http://localhost:5000/api/products')
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (data.products) setProducts(data.products);
@@ -60,7 +61,7 @@ export const AdminDashboard: React.FC = () => {
   const handleStatusChange = (orderId: number, newStatus: string) => {
     if (!token) return;
 
-    fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+    fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -92,7 +93,7 @@ export const AdminDashboard: React.FC = () => {
   const handleStockUpdate = (productId: number) => {
     if (!token) return;
 
-    fetch(`http://localhost:5000/api/products/${productId}/stock`, {
+    fetch(`${API_BASE_URL}/api/products/${productId}/stock`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export const AdminDashboard: React.FC = () => {
             prev.map((p) => (p.id === productId ? { ...p, stock: newStockVal } : p))
           );
           // Refresh low stock count in stats
-          fetch('http://localhost:5000/api/orders/admin/stats', {
+          fetch(`${API_BASE_URL}/api/orders/admin/stats`, {
             headers: { Authorization: `Bearer ${token}` },
           })
             .then((res) => res.json())
