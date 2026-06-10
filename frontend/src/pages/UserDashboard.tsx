@@ -161,7 +161,7 @@ export const UserDashboard: React.FC = () => {
                   <div className="bg-[#0b0f19] border border-gray-850 p-4 rounded-xl space-y-3 flex flex-col justify-between">
                     <div>
                       <h4 className="font-bold text-white text-sm">Smart Fruit Box</h4>
-                      <p className="text-xs text-gray-500 mt-1">$24.99/week • 5kg custom items</p>
+                      <p className="text-xs text-gray-500 mt-1">₹1,999/week • 5kg custom items</p>
                     </div>
                     <button
                       onClick={() => handleSubscribe('WEEKLY_BOX')}
@@ -173,7 +173,7 @@ export const UserDashboard: React.FC = () => {
                   <div className="bg-[#0b0f19] border border-gray-850 p-4 rounded-xl space-y-3 flex flex-col justify-between">
                     <div>
                       <h4 className="font-bold text-white text-sm">Healthy Family Pack</h4>
-                      <p className="text-xs text-gray-500 mt-1">$79.99/month • 20kg items</p>
+                      <p className="text-xs text-gray-500 mt-1">₹6,499/month • 20kg items</p>
                     </div>
                     <button
                       onClick={() => handleSubscribe('MONTHLY_FAMILY')}
@@ -246,7 +246,7 @@ export const UserDashboard: React.FC = () => {
                       <h4 className="font-bold text-white text-sm">
                         Placed on {new Date(ord.createdAt).toLocaleDateString()}
                       </h4>
-                      <p className="text-xs text-gray-400">Total: ${ord.total.toFixed(2)}</p>
+                      <p className="text-xs text-gray-400">Total: ₹{ord.total.toFixed(2)}</p>
                     </div>
 
                     <div className="text-right space-y-1">

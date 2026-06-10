@@ -156,7 +156,7 @@ export const Home: React.FC = () => {
 
                   <div className="flex items-center justify-between pt-2 border-t border-gray-800/80">
                     <div>
-                      <span className="text-xl font-bold text-white">${prod.price}</span>
+                      <span className="text-xl font-bold text-white">₹{prod.price}</span>
                       <span className="text-xs text-gray-500 ml-1">/ {prod.unit}</span>
                     </div>
                     <button
@@ -274,7 +274,7 @@ export const Home: React.FC = () => {
                     <span className="text-xs text-emerald-400 font-bold uppercase tracking-wider">Weekly Refill</span>
                     <h3 className="text-2xl font-bold text-white mt-1">Smart Fruit Box</h3>
                   </div>
-                  <span className="text-3xl font-extrabold text-white">$24.99 <span className="text-xs text-gray-500 font-medium">/ week</span></span>
+                  <span className="text-3xl font-extrabold text-white">₹1,999 <span className="text-xs text-gray-500 font-medium">/ week</span></span>
                 </div>
                 <p className="text-sm text-gray-400">
                   A custom box of 5kg fresh seasonal fruits selected by our AI based on your diet preferences.
@@ -304,7 +304,7 @@ export const Home: React.FC = () => {
                     <span className="text-xs text-teal-400 font-bold uppercase tracking-wider">Monthly Box</span>
                     <h3 className="text-2xl font-bold text-white mt-1">Healthy Family Pack</h3>
                   </div>
-                  <span className="text-3xl font-extrabold text-white">$79.99 <span className="text-xs text-gray-500 font-medium">/ month</span></span>
+                  <span className="text-3xl font-extrabold text-white">₹6,499 <span className="text-xs text-gray-500 font-medium">/ month</span></span>
                 </div>
                 <p className="text-sm text-gray-400">
                   A larger 20kg pack designed to support 3-4 family members for the entire month. Delivered in 4 weekly splits.

@@ -163,7 +163,7 @@ export const AdminDashboard: React.FC = () => {
               <span className="text-xs font-bold uppercase tracking-wider">Gross Revenues</span>
               <TrendingUp className="w-5 h-5 text-emerald-400" />
             </div>
-            <div className="text-3xl font-extrabold text-white">${stats.totalSales.toFixed(2)}</div>
+            <div className="text-3xl font-extrabold text-white">₹{stats.totalSales.toFixed(2)}</div>
             <div className="text-[10px] text-gray-500">Gross checkouts processed</div>
           </div>
 
@@ -277,7 +277,7 @@ export const AdminDashboard: React.FC = () => {
                   <div className="space-y-0.5">
                     <span className="text-[10px] text-gray-500 font-bold">ORDER ID: #{ord.id}</span>
                     <h4 className="font-bold text-white text-xs">{ord.user?.name || 'Guest'}</h4>
-                    <p className="text-[10px] text-emerald-400 font-semibold">${ord.total.toFixed(2)}</p>
+                    <p className="text-[10px] text-emerald-400 font-semibold">₹{ord.total.toFixed(2)}</p>
                   </div>
 
                   <select

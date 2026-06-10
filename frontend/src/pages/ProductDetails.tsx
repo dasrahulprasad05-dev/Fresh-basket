@@ -197,7 +197,7 @@ export const ProductDetails: React.FC = () => {
           </div>
 
           <div className="flex items-baseline gap-3 py-4 border-y border-gray-800">
-            <span className="text-3xl font-extrabold text-white">${product.price}</span>
+            <span className="text-3xl font-extrabold text-white">₹{product.price}</span>
             <span className="text-sm text-gray-500">per {product.unit}</span>
             <span
               className={`ml-auto text-xs font-semibold px-2.5 py-1 rounded-full uppercase ${
@@ -337,7 +337,7 @@ export const ProductDetails: React.FC = () => {
                   <h4 className="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
                     {rec.name}
                   </h4>
-                  <p className="text-xs text-gray-500">${rec.price} / {rec.unit}</p>
+                  <p className="text-xs text-gray-500">₹{rec.price} / {rec.unit}</p>
                 </div>
               </div>
             ))}

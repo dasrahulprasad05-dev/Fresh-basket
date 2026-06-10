@@ -68,7 +68,7 @@ export const Cart: React.FC = () => {
 
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discountAmount = coupon ? (subtotal * coupon.discount) / 100 : 0;
-  const shipping = subtotal > 30 || subtotal === 0 ? 0 : 4.99;
+  const shipping = subtotal > 500 || subtotal === 0 ? 0 : 99;
   const total = subtotal - discountAmount + shipping;
 
   if (cart.length === 0) {
@@ -113,7 +113,7 @@ export const Cart: React.FC = () => {
               <div className="flex-1 space-y-1 w-full text-center sm:text-left">
                 <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">{item.product.category}</span>
                 <h3 className="font-bold text-white text-base leading-tight line-clamp-1">{item.product.name}</h3>
-                <p className="text-xs text-gray-500">${item.product.price} / {item.product.unit}</p>
+                <p className="text-xs text-gray-500">₹{item.product.price} / {item.product.unit}</p>
               </div>
 
               {/* Quantity incrementor */}
@@ -135,7 +135,7 @@ export const Cart: React.FC = () => {
 
               {/* Price calculation */}
               <div className="text-center sm:text-right min-w-[70px] w-full sm:w-auto">
-                <span className="font-bold text-white text-lg">${(item.product.price * item.quantity).toFixed(2)}</span>
+                <span className="font-bold text-white text-lg">₹{(item.product.price * item.quantity).toFixed(2)}</span>
               </div>
 
               <button
@@ -246,30 +246,30 @@ export const Cart: React.FC = () => {
             <div className="space-y-2.5 text-sm text-gray-400">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="text-white font-medium">${subtotal.toFixed(2)}</span>
+                <span className="text-white font-medium">₹{subtotal.toFixed(2)}</span>
               </div>
               {coupon && (
                 <div className="flex justify-between text-emerald-400">
                   <span>Coupon ({coupon.code})</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span className="text-white font-medium">
-                  {shipping === 0 ? <span className="text-emerald-400 font-bold">FREE</span> : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? <span className="text-emerald-400 font-bold">FREE</span> : `₹${shipping.toFixed(2)}`}
                 </span>
               </div>
               {shipping > 0 && (
                 <p className="text-[10px] text-gray-500 text-right leading-tight">
-                  Add <span className="text-white font-bold">${(30 - subtotal).toFixed(2)}</span> more to unlock free shipping!
+                  Add <span className="text-white font-bold">₹{(500 - subtotal).toFixed(2)}</span> more to unlock free shipping!
                 </p>
               )}
             </div>
 
             <div className="flex justify-between items-baseline pt-4 border-t border-gray-800">
               <span className="font-bold text-white text-base">Total Cost</span>
-              <span className="font-extrabold text-emerald-400 text-2xl">${total.toFixed(2)}</span>
+              <span className="font-extrabold text-emerald-400 text-2xl">₹{total.toFixed(2)}</span>
             </div>
 
             <button

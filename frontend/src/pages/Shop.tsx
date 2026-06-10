@@ -288,7 +288,7 @@ export const Shop: React.FC = () => {
                       {/* Call to actions */}
                       <div className="flex items-center justify-between pt-3 border-t border-gray-800/80">
                         <div className="text-left">
-                          <span className="text-xl font-bold text-white">${prod.price}</span>
+                          <span className="text-xl font-bold text-white">₹{prod.price}</span>
                           <span className="text-xs text-gray-500 ml-1">/ {prod.unit}</span>
                         </div>
 

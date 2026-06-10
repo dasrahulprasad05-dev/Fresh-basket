@@ -21,7 +21,7 @@ export const Checkout: React.FC = () => {
   // Calculations
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const discountAmount = coupon ? (subtotal * coupon.discount) / 100 : 0;
-  const shipping = subtotal > 30 || subtotal === 0 ? 0 : 4.99;
+  const shipping = subtotal > 500 || subtotal === 0 ? 0 : 99;
   const total = subtotal - discountAmount + shipping;
 
   const handleCheckoutSubmit = (e: React.FormEvent) => {
@@ -205,7 +205,7 @@ export const Checkout: React.FC = () => {
               {cart.map((item) => (
                 <div key={item.product.id} className="flex justify-between items-center text-sm">
                   <span className="text-gray-350 line-clamp-1">{item.product.name} (x{item.quantity})</span>
-                  <span className="text-white font-medium">${(item.product.price * item.quantity).toFixed(2)}</span>
+                  <span className="text-white font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -214,23 +214,23 @@ export const Checkout: React.FC = () => {
             <div className="space-y-2.5 text-xs text-gray-400 pt-4 border-t border-gray-800">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="text-white">${subtotal.toFixed(2)}</span>
+                <span className="text-white">₹{subtotal.toFixed(2)}</span>
               </div>
               {coupon && (
                 <div className="flex justify-between text-emerald-400">
                   <span>Discount ({coupon.code})</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-₹{discountAmount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? 'FREE' : `₹${shipping.toFixed(2)}`}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-baseline pt-4 border-t border-gray-800">
               <span className="font-bold text-white text-sm">Grand Total</span>
-              <span className="font-extrabold text-emerald-400 text-xl">${total.toFixed(2)}</span>
+              <span className="font-extrabold text-emerald-400 text-xl">₹{total.toFixed(2)}</span>
             </div>
 
             <button
