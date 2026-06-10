@@ -1,0 +1,100 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  name          String
+  role          String         @default("CUSTOMER") // CUSTOMER, ADMIN
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        Order[]
+  subscriptions Subscription[]
+  reviews       Review[]
+}
+
+model Farmer {
+  id        Int       @id @default(autoincrement())
+  name      String
+  location  String
+  story     String
+  image     String
+  lat       Float     @default(0.0)
+  lng       Float     @default(0.0)
+  products  Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  category    String      // Citrus, Berries, Tropical, Melons, Stone Fruit, etc.
+  price       Float
+  stock       Int
+  unit        String      // kg, pack, piece
+  image       String
+  calories    Float
+  protein     Float
+  carbs       Float
+  vitamins    String      // Comma-separated list like "Vitamin C, Vitamin A"
+  season      String      // Summer, Autumn, Winter, Spring, All
+  isFeatured  Boolean     @default(false)
+  farmerId    Int?
+  farmer      Farmer?     @relation(fields: [farmerId], references: [id])
+  orderItems  OrderItem[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  status        String      @default("PLACED") // PLACED, PACKED, OUT_FOR_DELIVERY, DELIVERED
+  total         Float
+  address       String
+  paymentMethod String      // Card, PayPal, COD
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+}
+
+model Subscription {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  type         String   // WEEKLY_BOX, MONTHLY_FAMILY
+  status       String   @default("ACTIVE") // ACTIVE, CANCELLED
+  nextDelivery DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+}
