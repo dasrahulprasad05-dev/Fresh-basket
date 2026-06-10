@@ -9,6 +9,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
   const { user, logout, cart, wishlist } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
+  const isHome = location.pathname === '/';
   const [stockAlert, setStockAlert] = useState<{ name: string; stock: number } | null>(null);
 
   // Subscribe to real-time inventory updates for Low Stock Alert Banner
@@ -49,7 +50,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       )}
 
       {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-gray-800/80">
+      <header className={`${isHome ? "absolute top-0 left-0 right-0 border-b border-gray-800/20 bg-transparent" : "sticky top-0 glass border-b border-gray-800/80"} z-40`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
@@ -150,7 +151,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className={isHome ? "flex-1 w-full animate-fade-in" : "flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"}>
         {children}
       </main>
 

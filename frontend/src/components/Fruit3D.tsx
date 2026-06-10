@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 interface Fruit3DProps {
-  fruitType: 'apple' | 'orange' | 'banana' | 'kiwi' | 'dragon' | 'watermelon' | 'all';
+  fruitType: 'apple' | 'orange' | 'banana' | 'kiwi' | 'dragon' | 'watermelon' | 'mango' | 'pomegranate' | 'strawberry' | 'grapes' | 'all';
   interactive?: boolean;
 }
 
@@ -219,58 +219,202 @@ export const Fruit3D: React.FC<Fruit3DProps> = ({ fruitType, interactive = false
       return melonGroup;
     };
 
+    const createMango = () => {
+      const mangoGroup = new THREE.Group();
+      const bodyGeo = new THREE.SphereGeometry(1.1, 32, 32);
+      bodyGeo.scale(1.28, 0.92, 0.82);
+      
+      const posAttr = bodyGeo.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        const x = posAttr.getX(i);
+        const y = posAttr.getY(i);
+        const z = posAttr.getZ(i);
+        if (x > 0.25) {
+          posAttr.setY(i, y - 0.18 * (x - 0.25));
+        }
+      }
+      bodyGeo.computeVertexNormals();
+
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0xfcb900, // Golden yellow-orange
+        roughness: 0.18,
+        metalness: 0.08,
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      mangoGroup.add(body);
+
+      const stemGeo = new THREE.CylinderGeometry(0.04, 0.03, 0.2, 8);
+      const stemMat = new THREE.MeshStandardMaterial({ color: 0x5c3d24, roughness: 0.9 });
+      const stem = new THREE.Mesh(stemGeo, stemMat);
+      stem.position.set(-0.25, 0.95, 0);
+      stem.rotation.z = -0.35;
+      mangoGroup.add(stem);
+
+      return mangoGroup;
+    };
+
+    const createPomegranate = () => {
+      const pomGroup = new THREE.Group();
+      const bodyGeo = new THREE.SphereGeometry(1.12, 32, 32);
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0xb91c1c, // Ruby red
+        roughness: 0.22,
+        metalness: 0.1,
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      pomGroup.add(body);
+
+      const crownGeo = new THREE.CylinderGeometry(0.2, 0.14, 0.22, 8);
+      const crownMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.4 });
+      const crown = new THREE.Mesh(crownGeo, crownMat);
+      crown.position.y = 1.2;
+      pomGroup.add(crown);
+
+      for (let i = 0; i < 5; i++) {
+        const toothGeo = new THREE.ConeGeometry(0.05, 0.12, 4);
+        const toothMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.4 });
+        const tooth = new THREE.Mesh(toothGeo, toothMat);
+        const angle = (i / 5) * Math.PI * 2;
+        tooth.position.set(Math.cos(angle) * 0.16, 1.32, Math.sin(angle) * 0.16);
+        tooth.rotation.x = Math.sin(angle) * 0.4;
+        tooth.rotation.z = -Math.cos(angle) * 0.4;
+        pomGroup.add(tooth);
+      }
+
+      return pomGroup;
+    };
+
+    const createStrawberry = () => {
+      const strawGroup = new THREE.Group();
+      const bodyGeo = new THREE.ConeGeometry(0.9, 1.45, 32);
+      bodyGeo.rotateX(Math.PI);
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0xe11d48, // Strawberry red
+        roughness: 0.18,
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      strawGroup.add(body);
+
+      for (let i = 0; i < 6; i++) {
+        const leafGeo = new THREE.ConeGeometry(0.14, 0.42, 4);
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.5 });
+        const leaf = new THREE.Mesh(leafGeo, leafMat);
+        const angle = (i / 6) * Math.PI * 2;
+        leaf.position.set(Math.cos(angle) * 0.32, 0.68, Math.sin(angle) * 0.32);
+        leaf.rotation.z = -angle - Math.PI / 4;
+        strawGroup.add(leaf);
+      }
+
+      const seedGeo = new THREE.SphereGeometry(0.024, 8, 8);
+      const seedMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.1 });
+      for (let j = 0; j < 32; j++) {
+        const seed = new THREE.Mesh(seedGeo, seedMat);
+        const theta = Math.random() * Math.PI * 0.7 + 0.1;
+        const phi = Math.random() * Math.PI * 2;
+        const radius = 0.88 * (1 - (theta / Math.PI));
+        const y = -0.7 + 1.4 * (theta / Math.PI);
+        seed.position.set(
+          Math.cos(phi) * radius,
+          y,
+          Math.sin(phi) * radius
+        );
+        strawGroup.add(seed);
+      }
+
+      return strawGroup;
+    };
+
+    const createGrapes = () => {
+      const grapesGroup = new THREE.Group();
+      const grapeGeo = new THREE.SphereGeometry(0.28, 16, 16);
+      const grapeMat = new THREE.MeshStandardMaterial({
+        color: 0x581c87, // Deep purple grape
+        roughness: 0.15,
+        metalness: 0.05,
+      });
+
+      const positions = [
+        [0, 0.55, 0],
+        [-0.18, 0.25, 0.18], [0.18, 0.25, 0.18], [0, 0.25, -0.25],
+        [-0.28, 0, 0], [0.28, 0, 0], [0, 0, 0.28], [0, 0, -0.28],
+        [-0.18, -0.25, 0.12], [0.18, -0.25, 0.12], [0, -0.25, -0.18],
+        [0, -0.55, 0]
+      ];
+
+      positions.forEach(([x, y, z]) => {
+        const grape = new THREE.Mesh(grapeGeo, grapeMat);
+        grape.position.set(x, y, z);
+        grapesGroup.add(grape);
+      });
+
+      const stemGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.45, 8);
+      const stemMat = new THREE.MeshStandardMaterial({ color: 0x3f6212, roughness: 0.8 });
+      const stem = new THREE.Mesh(stemGeo, stemMat);
+      stem.position.y = 0.8;
+      stem.rotation.z = 0.22;
+      grapesGroup.add(stem);
+
+      return grapesGroup;
+    };
+
     // 6. Spawn appropriate visual
     if (fruitType === 'all') {
-      // Create background floating particle system representing multiple fruits
-      const colors = [0xe11d48, 0xf59e0b, 0xfacc15, 0x78350f, 0xec4899, 0x15803d];
+      // Create detailed background particle system representing multiple fruits
+      const colors = [0xe11d48, 0xf59e0b, 0xfacc15, 0x78350f, 0xec4899, 0x15803d, 0xfcb900, 0xb91c1c, 0x581c87];
       
       // Floating small spheres (fruit bubbles)
-      const particleGeo = new THREE.SphereGeometry(0.18, 16, 16);
-      for (let i = 0; i < 25; i++) {
+      const particleGeo = new THREE.SphereGeometry(0.16, 16, 16);
+      for (let i = 0; i < 60; i++) {
         const randColor = colors[Math.floor(Math.random() * colors.length)];
         const particleMat = new THREE.MeshStandardMaterial({
           color: randColor,
-          roughness: 0.2,
+          roughness: 0.18,
           transparent: true,
-          opacity: 0.75,
+          opacity: 0.65 + Math.random() * 0.25,
         });
         const mesh = new THREE.Mesh(particleGeo, particleMat);
         mesh.position.set(
-          (Math.random() - 0.5) * 8,
-          (Math.random() - 0.5) * 8,
-          (Math.random() - 0.5) * 4 - 2
+          (Math.random() - 0.5) * 12,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 6 - 2.5
         );
+        const scale = 0.6 + Math.random() * 0.8;
+        mesh.scale.set(scale, scale, scale);
         mesh.userData = {
-          spinSpeedX: (Math.random() - 0.5) * 0.02,
-          spinSpeedY: (Math.random() - 0.5) * 0.02,
-          floatSpeed: 0.005 + Math.random() * 0.01,
+          spinSpeedX: (Math.random() - 0.5) * 0.015,
+          spinSpeedY: (Math.random() - 0.5) * 0.015,
+          floatSpeed: 0.003 + Math.random() * 0.008,
           floatOffset: Math.random() * Math.PI * 2,
         };
         group.add(mesh);
         fruitObjects.push(mesh);
       }
 
-      // Add a couple of larger full models floating around
-      const f1 = createApple();
-      f1.position.set(-2, 1.5, -1.5);
-      f1.scale.set(0.6, 0.6, 0.6);
-      f1.userData = { spinSpeedX: 0.005, spinSpeedY: 0.01, floatSpeed: 0.008, floatOffset: 0 };
-      group.add(f1);
-      fruitObjects.push(f1);
+      // Add a diverse selection of 8 larger floating fruit models
+      const models = [
+        { model: createApple(), pos: [-2.2, 1.8, -1.5], scale: 0.62 },
+        { model: createOrange(), pos: [2.5, -1.2, -1.0], scale: 0.62 },
+        { model: createBanana(), pos: [-2.0, -1.8, -2.0], scale: 0.52 },
+        { model: createMango(), pos: [1.8, 1.8, -1.8], scale: 0.58 },
+        { model: createPomegranate(), pos: [-1.2, 0.5, -2.5], scale: 0.58 },
+        { model: createGrapes(), pos: [2.2, 0.4, -2.2], scale: 0.58 },
+        { model: createStrawberry(), pos: [0.8, -1.6, -1.5], scale: 0.58 },
+        { model: createKiwi(), pos: [-0.5, -2.0, -2.0], scale: 0.58 }
+      ];
 
-      const f2 = createOrange();
-      f2.position.set(2.2, -1.2, -1);
-      f2.scale.set(0.6, 0.6, 0.6);
-      f2.userData = { spinSpeedX: 0.008, spinSpeedY: 0.004, floatSpeed: 0.007, floatOffset: 2 };
-      group.add(f2);
-      fruitObjects.push(f2);
-
-      const f3 = createBanana();
-      f3.position.set(-1.8, -1.5, -2);
-      f3.scale.set(0.5, 0.5, 0.5);
-      f3.userData = { spinSpeedX: 0.003, spinSpeedY: 0.006, floatSpeed: 0.009, floatOffset: 4 };
-      group.add(f3);
-      fruitObjects.push(f3);
+      models.forEach((item, index) => {
+        const f = item.model;
+        f.position.set(item.pos[0], item.pos[1], item.pos[2]);
+        f.scale.set(item.scale, item.scale, item.scale);
+        f.userData = {
+          spinSpeedX: 0.002 + Math.random() * 0.006,
+          spinSpeedY: 0.004 + Math.random() * 0.008,
+          floatSpeed: 0.005 + Math.random() * 0.005,
+          floatOffset: index * 1.5
+        };
+        group.add(f);
+        fruitObjects.push(f);
+      });
 
     } else {
       // Single product rendering
@@ -293,6 +437,18 @@ export const Fruit3D: React.FC<Fruit3DProps> = ({ fruitType, interactive = false
           break;
         case 'watermelon':
           model = createWatermelon();
+          break;
+        case 'mango':
+          model = createMango();
+          break;
+        case 'pomegranate':
+          model = createPomegranate();
+          break;
+        case 'strawberry':
+          model = createStrawberry();
+          break;
+        case 'grapes':
+          model = createGrapes();
           break;
         default:
           model = createApple();
