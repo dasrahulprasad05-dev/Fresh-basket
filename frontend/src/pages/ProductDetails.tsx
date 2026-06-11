@@ -67,15 +67,6 @@ export const ProductDetails: React.FC = () => {
     );
   }
 
-  // Map product name to programmatic Three.js shape key
-  let threeKey: 'apple' | 'orange' | 'banana' | 'kiwi' | 'dragon' | 'watermelon' = 'apple';
-  const lowercaseName = product.name.toLowerCase();
-  if (lowercaseName.includes('orange')) threeKey = 'orange';
-  else if (lowercaseName.includes('banana')) threeKey = 'banana';
-  else if (lowercaseName.includes('kiwi')) threeKey = 'kiwi';
-  else if (lowercaseName.includes('dragon')) threeKey = 'dragon';
-  else if (lowercaseName.includes('watermelon')) threeKey = 'watermelon';
-
   // Handle Review submission
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,7 +123,7 @@ export const ProductDetails: React.FC = () => {
           <div className="aspect-square rounded-3xl overflow-hidden glass border border-gray-800 relative bg-gradient-to-b from-gray-950 to-gray-900 shadow-2xl flex flex-col justify-between">
             {/* Interactive 3D Canvas */}
             <div className="absolute inset-0 z-0">
-              <Fruit3D fruitType={threeKey} interactive={true} />
+              <Fruit3D productName={product.name} interactive={true} />
             </div>
 
             <div className="relative z-10 p-5 flex justify-between items-start pointer-events-none">
