@@ -27,11 +27,19 @@ export async function calculateNutritionFacts(req: AuthenticatedRequest, res: Re
       return res.status(400).json({ error: 'Items array is required.' });
     }
 
+    const productIds = items.map((i: any) => i.productId).filter((id: any) => typeof id === 'number');
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } },
+    });
+
+    const productMap = new Map<number, any>();
+    for (const product of products) {
+      productMap.set(product.id, product);
+    }
+
     const aggregatedItems = [];
     for (const item of items) {
-      const product = await prisma.product.findUnique({
-        where: { id: item.productId }
-      });
+      const product = productMap.get(item.productId);
       if (product) {
         aggregatedItems.push({ product, quantity: item.quantity });
       }

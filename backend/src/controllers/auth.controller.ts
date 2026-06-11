@@ -4,7 +4,10 @@ import * as jwt from 'jsonwebtoken';
 import prisma from '../config/db';
 import { AuthenticatedRequest } from '../middleware/auth';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-12345';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET env var is required');
+}
 
 export async function register(req: Request, res: Response) {
   try {

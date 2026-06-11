@@ -6,7 +6,7 @@ let io: Server;
 export function initSocket(server: HttpServer) {
   io = new Server(server, {
     cors: {
-      origin: '*',
+      origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
       methods: ['GET', 'POST'],
     },
   });

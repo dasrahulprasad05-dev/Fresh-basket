@@ -1,6 +1,15 @@
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import prisma from '../config/db';
 import { broadcastInventoryUpdate } from '../sockets/socket';
+import { AuthenticatedRequest } from '../middleware/auth';
+
+const createProductSchema = z.object({
+  name: z.string({ required_error: 'Name is required' }).min(1, 'Name cannot be empty'),
+  price: z.number({ required_error: 'Price is required' }).positive('Price must be a positive number'),
+  stock: z.number({ required_error: 'Stock is required' }).int().nonnegative('Stock must be a non-negative integer'),
+  category: z.string({ required_error: 'Category is required' }).min(1, 'Category cannot be empty'),
+});
 
 export async function getProducts(req: Request, res: Response) {
   try {
@@ -83,6 +92,22 @@ export async function getProductById(req: Request, res: Response) {
 
 export async function createProduct(req: Request, res: Response) {
   try {
+    const priceNum = req.body.price !== undefined && req.body.price !== '' ? Number(req.body.price) : undefined;
+    const stockNum = req.body.stock !== undefined && req.body.stock !== '' ? Number(req.body.stock) : undefined;
+
+    const validation = createProductSchema.safeParse({
+      name: req.body.name,
+      price: priceNum,
+      stock: stockNum,
+      category: req.body.category,
+    });
+
+    if (!validation.success) {
+      return res.status(400).json({
+        error: validation.error.errors.map((e) => e.message).join(', '),
+      });
+    }
+
     const {
       name,
       description,
@@ -164,19 +189,22 @@ export async function getFarmers(req: Request, res: Response) {
   }
 }
 
-export async function addReview(req: Request, res: Response) {
+export async function addReview(req: AuthenticatedRequest, res: Response) {
   try {
     const productId = parseInt(req.params.id);
-    const { userId, rating, comment } = req.body;
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+    const { rating, comment } = req.body;
 
-    if (isNaN(productId) || !userId || !rating || !comment) {
-      return res.status(400).json({ error: 'Product ID, User ID, rating and comment are required.' });
+    if (isNaN(productId) || rating === undefined || !comment) {
+      return res.status(400).json({ error: 'Product ID, rating and comment are required.' });
     }
 
     const review = await prisma.review.create({
       data: {
         productId,
-        userId: parseInt(userId),
+        userId: req.user.id,
         rating: parseInt(rating),
         comment,
       },

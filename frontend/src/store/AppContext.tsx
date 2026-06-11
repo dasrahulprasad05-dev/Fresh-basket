@@ -7,8 +7,25 @@ export interface User {
   role: string;
 }
 
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+  category: string;
+  image: string;
+  description: string;
+  unit: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  vitamins: string;
+  season: string;
+  isFeatured: boolean;
+}
+
 export interface CartItem {
-  product: any;
+  product: Product;
   quantity: number;
 }
 
@@ -18,12 +35,12 @@ interface AppContextType {
   login: (token: string, user: User) => void;
   logout: () => void;
   cart: CartItem[];
-  addToCart: (product: any, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: number) => void;
   updateCartQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
-  wishlist: any[];
-  toggleWishlist: (product: any) => void;
+  wishlist: Product[];
+  toggleWishlist: (product: Product) => void;
   coupon: { code: string; discount: number } | null;
   applyCoupon: (code: string) => boolean;
   removeCoupon: () => void;
@@ -35,7 +52,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [wishlist, setWishlist] = useState<any[]>([]);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
   const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
 
   // Load initial state from localStorage
@@ -93,7 +110,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.removeItem('fb_wishlist');
   };
 
-  const addToCart = (product: any, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.product.id === product.id);
       if (existingItem) {
@@ -129,7 +146,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.removeItem('fb_cart');
   };
 
-  const toggleWishlist = (product: any) => {
+  const toggleWishlist = (product: Product) => {
     setWishlist((prevWishlist) => {
       const exists = prevWishlist.some((item) => item.id === product.id);
       if (exists) {

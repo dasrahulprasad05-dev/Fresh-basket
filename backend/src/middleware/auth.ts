@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-12345';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET env var is required');
+}
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -19,7 +22,7 @@ export function authenticateToken(req: AuthenticatedRequest, res: Response, next
     return res.status(401).json({ error: 'Access token required.' });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET as string, (err, decoded) => {
     if (err) {
       return res.status(403).json({ error: 'Invalid or expired token.' });
     }
@@ -28,9 +31,19 @@ export function authenticateToken(req: AuthenticatedRequest, res: Response, next
   });
 }
 
+export function optionalAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  if (authHeader) {
+    authenticateToken(req, res, next);
+  } else {
+    next();
+  }
+}
+
 export function requireAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   if (!req.user || req.user.role !== 'ADMIN') {
     return res.status(403).json({ error: 'Access restricted to administrators.' });
   }
   next();
 }
+

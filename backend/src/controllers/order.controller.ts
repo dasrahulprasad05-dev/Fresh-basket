@@ -3,22 +3,34 @@ import prisma from '../config/db';
 import { AuthenticatedRequest } from '../middleware/auth';
 import { broadcastInventoryUpdate, sendOrderStatusUpdate } from '../sockets/socket';
 
+export class BusinessError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BusinessError';
+  }
+}
+
 export async function checkout(req: AuthenticatedRequest, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized.' });
     }
 
-    const { items, address, paymentMethod } = req.body;
+    const { items, address, paymentMethod, couponCode } = req.body;
     // items: { productId: number, quantity: number }[]
 
     if (!items || !items.length || !address || !paymentMethod) {
       return res.status(400).json({ error: 'Invalid checkout parameters.' });
     }
 
+    // Validate coupon code server-side before database lock
+    if (couponCode && couponCode !== 'FRESH20' && couponCode !== 'HEALTHY10') {
+      return res.status(400).json({ error: 'Invalid coupon code.' });
+    }
+
     // Run transaction
     const order = await prisma.$transaction(async (tx) => {
-      let total = 0;
+      let subtotal = 0;
       const orderItemsData = [];
 
       for (const item of items) {
@@ -27,30 +39,40 @@ export async function checkout(req: AuthenticatedRequest, res: Response) {
         });
 
         if (!product) {
-          throw new Error(`Product with ID ${item.productId} not found.`);
+          throw new BusinessError(`Product with ID ${item.productId} not found.`);
         }
 
         if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
+          throw new BusinessError(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
         }
 
         // Deduct stock
-        const updatedProduct = await tx.product.update({
+        await tx.product.update({
           where: { id: item.productId },
           data: { stock: product.stock - item.quantity },
         });
 
-        total += product.price * item.quantity;
+        subtotal += product.price * item.quantity;
         orderItemsData.push({
           productId: product.id,
           quantity: item.quantity,
           price: product.price,
         });
-
-        // Defer stock broadcast to after transaction success
       }
 
-      // Create order
+      // Calculate discount
+      let discountAmount = 0;
+      if (couponCode === 'FRESH20') {
+        discountAmount = (subtotal * 20) / 100;
+      } else if (couponCode === 'HEALTHY10') {
+        discountAmount = (subtotal * 10) / 100;
+      }
+
+      // Calculate shipping
+      const shipping = subtotal > 500 || subtotal === 0 ? 0 : 99;
+      const total = subtotal - discountAmount + shipping;
+
+      // Create order with secure total
       return tx.order.create({
         data: {
           userId: req.user!.id,
@@ -78,7 +100,10 @@ export async function checkout(req: AuthenticatedRequest, res: Response) {
 
     return res.status(201).json({ order });
   } catch (error: any) {
-    return res.status(400).json({ error: error.message });
+    if (error instanceof BusinessError) {
+      return res.status(400).json({ error: error.message });
+    }
+    return res.status(500).json({ error: 'Checkout transaction failed. Please try again.' });
   }
 }
 
@@ -113,6 +138,11 @@ export async function updateOrderStatus(req: AuthenticatedRequest, res: Response
 
     if (isNaN(orderId) || !status) {
       return res.status(400).json({ error: 'Invalid parameters.' });
+    }
+
+    const allowedStatuses = ['PLACED', 'PACKED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid order status value.' });
     }
 
     const order = await prisma.order.update({
@@ -178,9 +208,22 @@ export async function getCustomerSubscriptions(req: AuthenticatedRequest, res: R
 
 export async function cancelSubscription(req: AuthenticatedRequest, res: Response) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+
     const subId = parseInt(req.params.id);
     if (isNaN(subId)) {
       return res.status(400).json({ error: 'Invalid subscription ID.' });
+    }
+
+    // Secure ownership check
+    const sub = await prisma.subscription.findFirst({
+      where: { id: subId, userId: req.user.id }
+    });
+
+    if (!sub) {
+      return res.status(404).json({ error: 'Subscription not found.' });
     }
 
     const subscription = await prisma.subscription.update({
@@ -196,6 +239,9 @@ export async function cancelSubscription(req: AuthenticatedRequest, res: Respons
 
 export async function getAdminStats(req: AuthenticatedRequest, res: Response) {
   try {
+    const page = parseInt(req.query.page as string) || 0;
+    const offset = page * 50;
+
     // Aggregations
     const totalOrders = await prisma.order.count();
     const orders = await prisma.order.findMany({
@@ -203,6 +249,8 @@ export async function getAdminStats(req: AuthenticatedRequest, res: Response) {
         user: { select: { name: true, email: true } },
       },
       orderBy: { createdAt: 'desc' },
+      take: 50,
+      skip: offset,
     });
 
     const sumSales = await prisma.order.aggregate({

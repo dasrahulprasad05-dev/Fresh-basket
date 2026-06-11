@@ -57,6 +57,7 @@ export const Checkout: React.FC = () => {
         items: checkoutItems,
         address: fullAddressString,
         paymentMethod,
+        couponCode: coupon?.code || null,
       }),
     })
       .then((res) => res.json())
