@@ -19,8 +19,19 @@ const httpServer = createServer(app);
 initSocket(httpServer);
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.CORS_ORIGIN
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.railway.app') || origin.startsWith('http://localhost:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

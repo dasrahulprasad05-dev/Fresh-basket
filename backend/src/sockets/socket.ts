@@ -4,9 +4,20 @@ import { Server, Socket } from 'socket.io';
 let io: Server;
 
 export function initSocket(server: HttpServer) {
+  const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.CORS_ORIGIN
+  ].filter(Boolean) as string[];
+
   io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.railway.app') || origin.startsWith('http://localhost:')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       methods: ['GET', 'POST'],
     },
   });
